@@ -2,6 +2,7 @@ from parser import obtener_funcion
 from metodos import biseccion, falsa_posicion, secante, newton
 from graficador import graficar
 import numpy as np
+import tkinter as tk # Importado para manejar la imagen del icono
 from tkinter import Tk, simpledialog, messagebox
 
 def buscar_intervalos(f, inicio=-50, fin=50, pasos=1000):
@@ -14,7 +15,16 @@ def buscar_intervalos(f, inicio=-50, fin=50, pasos=1000):
 
 def main():
     root = Tk()
-    root.withdraw() # Oculta la ventana pequeña de fondo
+    root.withdraw() # Oculta la ventana principal de Tkinter
+
+    # Configuración del icono de la aplicación
+    try:
+        # Se carga la imagen 'raiz.png' desde la carpeta del proyecto
+        icono = tk.PhotoImage(file='raiz.png') 
+        root.iconphoto(False, icono)
+    except Exception as e:
+        # Si el archivo no existe o el formato es incorrecto, el programa continúa sin icono
+        print(f"Aviso: No se pudo cargar el icono 'raiz.png': {e}")
 
     f, df, expr = obtener_funcion()
     if f is None: return
