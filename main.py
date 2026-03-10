@@ -4,14 +4,6 @@ from graficador import graficar
 import numpy as np
 from tkinter import Tk, simpledialog, messagebox
 
-def buscar_intervalos(f, inicio=-50, fin=50, pasos=1000):
-    xs = np.linspace(inicio, fin, pasos)
-    intervalos = []
-    for i in range(len(xs)-1):
-        if f(xs[i])*f(xs[i+1]) < 0:
-            intervalos.append((xs[i], xs[i+1]))
-    return intervalos
-
 def main():
     root = Tk()
     root.withdraw() # Oculta la ventana pequeña de fondo
@@ -26,20 +18,39 @@ def main():
         messagebox.showwarning("Aviso", "Opción no válida.")
         return
 
-    intervalos = buscar_intervalos(f)
     raices = []
 
-    for a, b in intervalos:
-        if opcion == 1: raiz = biseccion(f, a, b)
-        elif opcion == 2: raiz = falsa_posicion(f, a, b)
-        elif opcion == 3: raiz = secante(f, a, b)
-        elif opcion == 4: raiz = newton(f, df, (a+b)/2)
+    # Pedir valores según el método elegido:
+    if opcion == 1 or opcion == 2:
+        xi = simpledialog.askfloat("Valores Iniciales", "Ingresa el valor de x inferior (xi):")
+        xs = simpledialog.askfloat("Valores Iniciales", "Ingresa el valor de x superior (xs):")
+        # Si el usuario cierra la ventana o da cancelar, detenemos el flujo
+        if xi is None or xs is None: return
         
-        if raiz is not None:
-            raices.append(round(raiz, 6))
+        if opcion == 1: 
+            raiz = biseccion(f, xi, xs)
+        else: 
+            raiz = falsa_posicion(f, xi, xs)
+
+    elif opcion == 3:
+        x0 = simpledialog.askfloat("Valores Iniciales", "Ingresa el valor de xi-1:")
+        x1 = simpledialog.askfloat("Valores Iniciales", "Ingresa el valor de xi:")
+        if x0 is None or x1 is None: return
+        
+        raiz = secante(f, x0, x1)
+
+    elif opcion == 4:
+        x0 = simpledialog.askfloat("Valores Iniciales", "Ingresa el valor inicial xi:")
+        if x0 is None: return
+        
+        raiz = newton(f, df, x0)
+
+    # Si se encontró una raíz (no es None), agregarla a la lista
+    if raiz is not None:
+        raices.append(round(raiz, 6))
 
     if not raices:
-        messagebox.showinfo("Resultado", "No se encontraron raíces en el rango [-50, 50].")
+        messagebox.showinfo("Resultado", "No se encontró la raíz o hubo un error en los cálculos.")
         return
 
     # Eliminar duplicados y ordenar
